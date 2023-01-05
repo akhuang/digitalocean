@@ -1,8 +1,5 @@
 name: test
-on:
-  push:
-    branches:
-    - stage
+on: workflow_dispatch
 
 env:
   FIRST_NAME: Mona
