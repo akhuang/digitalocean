@@ -15,4 +15,21 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: 22
-          script: whoami
+          script: |
+            sudo snap install core
+            sudo snap install shadowsocks-libev --edge
+            sudo echo '{
+                          "server":["::0","0.0.0.0"],
+                          "server_port":443,
+                          "method":"chacha20-ietf-poly1305",
+                          "password":"${{ secrets.pwd }}",
+                          "mode":"tcp_and_udp",
+                          "fast_open":false
+                      }' > /var/snap/shadowsocks-libev/common/etc/shadowsocks-libev/config.json
+            sudo apt update && sudo apt install -y ufw
+            sudo ufw allow ssh
+            sudo ufw allow 443
+            sudo ufw enable
+            sudo systemctl start snap.shadowsocks-libev.ss-server-daemon.service
+            sudo systemctl enable snap.shadowsocks-libev.ss-server-daemon.service
+            sudo systemctl status snap.shadowsocks-libev.ss-server-daemon.service
